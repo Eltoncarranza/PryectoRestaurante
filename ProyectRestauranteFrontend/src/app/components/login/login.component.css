@@ -1,62 +1,47 @@
 .login-page {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  font-family: 'Inter', sans-serif;
+  /* Fondo degradado rojo/negro */
+  background: linear-gradient(135deg, #450a0a 0%, #000000 100%);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.98);
   border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 2px solid #facc15; /* Borde Dorado */
+  box-shadow: 0 0 25px rgba(250, 204, 21, 0.3);
 }
 
-.icon-box {
-  width: 70px;
-  height: 70px;
-  background: #10b981;
-  color: white;
-  border-radius: 18px;
+.icon-box-chifa {
+  width: 75px;
+  height: 75px;
+  background: #facc15; /* Dorado */
+  color: #b91c1c; /* Rojo Chifa */
+  border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+  font-size: 2.5rem;
 }
 
-.title {
-  color: #1f2937;
-  letter-spacing: -1px;
+.title-chifa {
+  color: #b91c1c;
+  letter-spacing: 1px;
 }
 
-.custom-input {
-  border: 2px solid #f3f4f6;
-  border-radius: 12px;
-  background: #f9fafb;
-}
-
-.custom-input:focus {
-  border-color: #10b981;
-  box-shadow: none;
-  background: white;
-}
-
-.btn-emerald {
-  background-color: #10b981;
+.btn-chifa-red {
+  background-color: #b91c1c;
   border: none;
-  color: white;
+  color: #facc15;
+  font-weight: 700;
   border-radius: 12px;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  transition: 0.3s;
 }
 
-.btn-emerald:hover {
-  background-color: #059669;
+.btn-chifa-red:hover {
+  background-color: #991b1b;
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+  color: white;
 }
 
-.btn-outline-dark {
-  border-radius: 12px;
-  border: 2px solid #374151;
-  font-weight: 600;
+.border-gold {
+  border-color: #facc15 !important;
 }

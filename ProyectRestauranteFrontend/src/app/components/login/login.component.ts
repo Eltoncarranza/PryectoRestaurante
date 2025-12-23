@@ -12,16 +12,9 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  // Objeto para vincular con el [(ngModel)] de tu HTML
-  credentials = {
-    email: '',
-    password: ''
-  };
+  credentials = { email: '', password: '' };
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  constructor(private authService: AuthService) {}
 
   ingresar() {
     if (!this.credentials.email || !this.credentials.password) {
@@ -30,14 +23,12 @@ export class LoginComponent {
     }
 
     this.authService.login(this.credentials).subscribe({
-      next: (response) => {
-        // El AuthService se encarga de guardar el rol y redirigir
-        console.log('Login exitoso', response);
+      next: (response: any) => {
+        // La redirección ocurre automáticamente en el tap del AuthService
       },
-      // CORRECCIÓN VITAL: Añadir ": any" para evitar el error TS7006
       error: (err: any) => {
         console.error('Error en login', err);
-        alert('Credenciales incorrectas o error de conexión con el servidor.');
+        alert('Correo o contraseña incorrectos.');
       }
     });
   }

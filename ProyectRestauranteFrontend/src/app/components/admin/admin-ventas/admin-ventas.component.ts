@@ -19,16 +19,29 @@ export class AdminVentasComponent implements OnInit {
     this.cargarReporte();
   }
 
+  /**
+   * Carga la lista de ventas desde el backend.
+   */
   cargarReporte(): void {
     this.apiService.getReporteVentas().subscribe({
-      next: (data) => {
+      // CORRECCIÓN: Se agrega ": any" para evitar el error TS7006
+      next: (data: any) => {
         this.ventas = data;
         this.cargando = false;
+        console.log('Reporte de ventas cargado', data);
       },
-      error: (err) => {
+      // CORRECCIÓN: Se agrega ": any" para evitar el error TS7006
+      error: (err: any) => {
         console.error('Error al obtener reporte de ventas', err);
         this.cargando = false;
       }
     });
+  }
+
+  /**
+   * Mejora: Cálculo automático del total recaudado en el reporte actual
+   */
+  get recaudacionTotal(): number {
+    return this.ventas.reduce((acc, venta) => acc + (venta.total || 0), 0);
   }
 }

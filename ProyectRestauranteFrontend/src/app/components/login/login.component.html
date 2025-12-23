@@ -1,11 +1,12 @@
 <div class="login-page d-flex align-items-center justify-content-center vh-100">
   <div class="glass-card p-5 text-center shadow-lg">
     <div class="brand-header mb-4">
-      <div class="icon-box mx-auto mb-3">
-        <i class="bi bi-shop"></i>
+      <div class="icon-box-chifa mx-auto mb-3">
+        <i class="bi bi-fire"></i>
       </div>
-      <h2 class="fw-bold title">REST-CONTROL</h2>
-      <p class="text-secondary small">Sistema de Gestión Gastronómica</p>
+      <h2 class="fw-bold title-chifa">
+        CONTROL</h2>
+      <p class="text-secondary small">Gestión Gastronómica Oriental</p>
     </div>
 
     <form (ngSubmit)="ingresar()" #loginForm="ngForm">
@@ -20,19 +21,15 @@
         <label for="password">Contraseña</label>
       </div>
 
-      <p class="text-muted small mb-3">Confirmar puesto de trabajo:</p>
       <div class="d-grid gap-2">
-        <button type="submit" class="btn btn-emerald btn-lg py-3">
-          <i class="bi bi-person-badge me-2"></i> INGRESAR COMO MESERO
-        </button>
-        <button type="submit" class="btn btn-outline-dark btn-lg py-3">
-          <i class="bi bi-egg-fried me-2"></i> INGRESAR COMO COCINERO
+        <button type="submit" class="btn btn-chifa-red btn-lg py-3">
+          <i class="bi bi-box-arrow-in-right me-2"></i> INICIAR SESIÓN
         </button>
       </div>
     </form>
     
-    <div class="mt-4 pt-3 border-top">
-      <a href="#" class="text-decoration-none text-muted small">¿Olvidaste tu contraseña?</a>
+    <div class="mt-4 pt-3 border-top border-gold">
+      <p class="text-muted small">El sistema detectará su puesto automáticamente según su cuenta.</p>
     </div>
   </div>
 </div>

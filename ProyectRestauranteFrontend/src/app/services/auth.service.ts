@@ -1,29 +1,31 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http'; // Importante
-import { Observable, tap } from 'rxjs'; // Importante
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private url = 'http://localhost:8080/api'; // Asegúrate de que esta sea tu URL
-  private roleKey = 'user_role'; // Llave única para localStorage
+  private url = 'http://localhost:8080/api'; 
+  private roleKey = 'user_role'; 
 
   constructor(private http: HttpClient, private router: Router) {}
 
   login(credentials: any): Observable<any> {
     return this.http.post(`${this.url}/auth/login`, credentials).pipe(
       tap((res: any) => {
-        if (res.status === 'success') {
-          // Guardamos usando la llave única
-          localStorage.setItem(this.roleKey, res.role); 
+        // CORRECCIÓN: Java devuelve 'rol', no 'role'. No buscamos 'status' porque no se envía.
+        if (res && res.rol) {
+          const userRole = res.rol.toUpperCase();
+          localStorage.setItem(this.roleKey, userRole);
           localStorage.setItem('token', 'session_active'); 
-          this.redirigir(res.role);
+          
+          console.log('Sesión iniciada. Rol detectado:', userRole);
+          this.redirigir(userRole);
         }
       })
     );
   }
 
-  // Un solo método getRole corregido
   getRole(): string {
     return localStorage.getItem(this.roleKey) || '';
   }
@@ -32,18 +34,19 @@ export class AuthService {
     return !!localStorage.getItem(this.roleKey);
   }
 
-  logout() {
-    localStorage.removeItem(this.roleKey);
-    localStorage.removeItem('token');
-    this.router.navigate(['/login']);
-  }
-
   private redirigir(role: string) {
     const rutas: any = {
       'ADMIN': '/admin/dashboard',
       'MESERO': '/mesas',
       'COCINERO': '/cocina'
     };
-    this.router.navigate([rutas[role]]);
+    
+    const destino = rutas[role];
+    if (destino) {
+      this.router.navigate([destino]);
+    } else {
+      console.error('Rol no reconocido:', role);
+      this.router.navigate(['/login']);
+    }
   }
 }

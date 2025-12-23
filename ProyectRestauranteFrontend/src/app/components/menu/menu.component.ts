@@ -6,6 +6,15 @@ import { ApiService } from '../../services/api.service';
 import { Plato } from '../../models/plato.model';
 import { Mesa } from '../../models/mesa.model';
 
+// Definimos una interfaz clara para los elementos del carrito
+interface ItemCarrito {
+  plato: Plato;
+  cantidad: number;
+  precioUnitario: number;
+  totalItem: number;
+  notas: string;
+}
+
 @Component({
   selector: 'app-menu',
   standalone: true,
@@ -15,9 +24,9 @@ import { Mesa } from '../../models/mesa.model';
 export class MenuComponent implements OnInit {
   idMesa!: number;
   platos: Plato[] = [];
-  carrito: any[] = []; 
+  carrito: ItemCarrito[] = []; 
   mesaSeleccionada?: Mesa;
-  cargando: boolean = true; // Control de estado para evitar el "Cargando..." infinito
+  cargando: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -29,39 +38,42 @@ export class MenuComponent implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('idMesa'));
     this.idMesa = id; 
 
-    // Mejora: Traer la mesa específica directamente
-    this.apiService.getMesaPorId(id).subscribe({
-      next: (mesa) => {
+    // 1. Carga de datos de la mesa (Sincronizado con ApiService.getMesa)
+    this.apiService.getMesa(id).subscribe({
+      next: (mesa: any) => {
         this.mesaSeleccionada = mesa;
         this.cargando = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error al obtener la mesa', err);
         this.cargando = false;
+        alert('No se pudo cargar la información de la mesa.');
       }
     });
 
-    // Cargar el catálogo de platos
-    this.apiService.getPlatos().subscribe(data => {
-      this.platos = data;
+    // 2. Carga del catálogo de platos
+    this.apiService.getPlatos().subscribe({
+      next: (data: any) => {
+        this.platos = data;
+      },
+      error: (err: any) => {
+        console.error('Error al cargar platos', err);
+      }
     });
   }
 
-  // Objetivo SMART: Precisión en el cálculo total
+  // Cálculo preciso del total acumulado
   get totalPedido(): number {
-    return this.carrito.reduce((acc, item) => acc + (item.precioUnitario * item.cantidad), 0);
+    return this.carrito.reduce((acc, item) => acc + item.totalItem, 0);
   }
 
   agregarAlCarrito(plato: Plato): void {
-    // Verificar si el plato ya está en el carrito
     const itemExistente = this.carrito.find(item => item.plato.id === plato.id);
 
     if (itemExistente) {
-      // Si existe, solo aumentamos la cantidad
       itemExistente.cantidad++;
       itemExistente.totalItem = itemExistente.cantidad * itemExistente.precioUnitario;
     } else {
-      // Si no existe, lo agregamos con nota opcional
       const notaEspecial = prompt(`¿Alguna especificación para ${plato.nombre}? (Opcional)`);
       
       this.carrito.push({
@@ -74,7 +86,6 @@ export class MenuComponent implements OnInit {
     }
   }
 
-  // Permite ajustar cantidades directamente en el resumen
   cambiarCantidad(index: number, delta: number): void {
     const item = this.carrito[index];
     item.cantidad += delta;
@@ -87,7 +98,10 @@ export class MenuComponent implements OnInit {
   }
 
   enviarPedidoFinal(): void {
-    if (this.carrito.length === 0) return;
+    if (this.carrito.length === 0) {
+      alert('El carrito está vacío.');
+      return;
+    }
 
     // Estructura de datos limpia para el Backend
     const pedidoData = {
@@ -105,7 +119,10 @@ export class MenuComponent implements OnInit {
         alert('¡Pedido enviado! La cocina ha recibido la comanda.');
         this.router.navigate(['/mesas']);
       },
-      error: (err) => alert('Error al procesar el pedido. Intente de nuevo.')
+      error: (err: any) => {
+        console.error('Error al enviar pedido', err);
+        alert('Error al procesar el pedido. Intente de nuevo.');
+      }
     });
   }
 
