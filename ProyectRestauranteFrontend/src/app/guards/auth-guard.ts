@@ -6,42 +6,35 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // 1. Obtener y normalizar el rol del usuario actual
-  // Usamos .toUpperCase() para asegurar compatibilidad con el Backend (ADMIN, MESERO, COCINERO)
-  const userRole = (authService.getRole() || '').toUpperCase(); 
-  
-  // 2. Obtener los roles permitidos definidos en app.routes
+  // 1. Obtener y limpiar el rol (añadimos .trim() para evitar espacios ocultos)
+  const userRole = (authService.getRole() || '').toUpperCase().trim();
   const rolesPermitidos = route.data['role'];
 
-  // 3. Verificar si hay una sesión activa
+  // 2. Verificar si el usuario está logueado
   if (!authService.isAuthenticated()) {
-    console.warn('Acceso denegado: Usuario no autenticado');
-    router.navigate(['/login']); //
+    console.error('Guard: Usuario no autenticado. Redirigiendo a Login.');
+    router.navigate(['/login']);
     return false;
   }
 
-  // 4. Si la ruta requiere roles específicos, verificar permisos
+  // 3. Verificar si la ruta tiene restricciones de rol
   if (rolesPermitidos) {
-    // Normalizamos rolesPermitidos a un arreglo en mayúsculas para evitar errores de escritura
     const rolesArray = (Array.isArray(rolesPermitidos) ? rolesPermitidos : [rolesPermitidos])
-                        .map(r => r.toUpperCase());
+                        .map(r => r.toUpperCase().trim());
 
     const tienePermiso = rolesArray.includes(userRole);
 
     if (!tienePermiso) {
-      console.error(`Acceso denegado: El rol ${userRole} no está en la lista permitida ${rolesArray}`);
-      alert('No tienes permisos para acceder a esta sección.'); //
+      console.warn(`Guard: Acceso DENEGADO. Rol actual: [${userRole}]. Permitidos: ${rolesArray}`);
+      alert(`Tu rol (${userRole}) no tiene permiso para entrar aquí.`);
       
-      // Mejora UX: Redirigir a una página segura según el rol real del usuario
-      if (userRole === 'ADMIN') router.navigate(['/admin']);
-      else if (userRole === 'MESERO') router.navigate(['/mesas']);
-      else if (userRole === 'COCINERO') router.navigate(['/cocina']);
-      else router.navigate(['/login']);
-      
+      // SOLUCIÓN: Si no tiene permiso, lo mandamos al login para que cambie de usuario
+      // Evitamos el bucle de redirigir a '/mesas' si ya estamos fallando en entrar ahí
+      router.navigate(['/login']);
       return false;
     }
   }
 
-  // Si pasa todas las validaciones, permite el acceso
+  console.log(`Guard: Acceso PERMITIDO para el rol ${userRole} a la ruta ${state.url}`);
   return true;
 };

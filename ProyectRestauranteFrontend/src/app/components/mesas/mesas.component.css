@@ -1,26 +1,32 @@
-/* Paleta de colores Chifa */
-.text-danger { color: #b91c1c !important; } /* Rojo Imperial */
-.border-danger { border-color: #b91c1c !important; }
-.btn-warning { 
-    background-color: #facc15 !important; /* Dorado */
-    color: #b91c1c !important; 
-    border: none;
+/* Estilo general de las tarjetas del salón */
+.card-chifa {
+  transition: transform 0.3s ease;
+  border-radius: 15px;
+  cursor: pointer;
 }
 
-.mesa-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-width: 2px !important;
+.card-chifa:hover {
+  transform: translateY(-5px);
 }
 
-.mesa-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(185, 28, 28, 0.4) !important;
+/* Color Dorado Chifa */
+.text-gold {
+  color: #ffcc00;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }
 
-.text-warning { color: #facc15 !important; }
-.border-warning { border-color: #facc15 !important; }
+.btn-gold {
+  background-color: #ffcc00;
+  color: #1a1a1a;
+  border: none;
+}
 
-/* Animación de carga */
-.spinner-border.text-danger {
-    color: #b91c1c !important;
+.btn-gold:hover {
+  background-color: #e6b800;
+  color: #000;
+}
+
+/* Efecto de borde dorado cuando está ocupada */
+.card-chifa[style*="background-color: rgb(179, 27, 27)"] {
+  border: 2px solid #ffcc00 !important;
 }

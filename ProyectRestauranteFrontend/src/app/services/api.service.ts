@@ -14,15 +14,15 @@ export class ApiService {
   // ==========================================
   // GESTIÓN DE MESAS
   // ==========================================
-getMesas(): Observable<Mesa[]> {
-  // Debe ser solo /mesas para que coincida con lo que tienes en tu servidor
-  return this.http.get<Mesa[]>(`${this.url}/mesas`); 
-}
+
+  getMesas(): Observable<Mesa[]> {
+    return this.http.get<Mesa[]>(`${this.url}/mesas`); 
+  }
+
   getMesa(id: number): Observable<any> {
     return this.http.get<any>(`${this.url}/mesas/${id}`);
   }
 
-  // Este método es necesario para el componente Menu
   getMesaPorId(id: number): Observable<Mesa> {
     return this.http.get<Mesa>(`${this.url}/mesas/${id}`);
   }
@@ -33,6 +33,12 @@ getMesas(): Observable<Mesa[]> {
 
   eliminarMesa(id: number): Observable<void> {
     return this.http.delete<void>(`${this.url}/mesas/${id}`);
+  }
+
+  // NUEVO MÉTODO: Libera la mesa en la BD y cambia su estado a LIBRE
+  cobrarMesa(id: number): Observable<Mesa> {
+    // Coincide con @PutMapping("/{id}/cobrar") en tu MesaController.java
+    return this.http.put<Mesa>(`${this.url}/mesas/${id}/cobrar`, {});
   }
 
   // ==========================================
@@ -72,21 +78,18 @@ getMesas(): Observable<Mesa[]> {
   }
 
   // ==========================================
-  // PAGOS Y REPORTES (LO QUE TE FALTABA)
+  // PAGOS Y REPORTES
   // ==========================================
 
   pagar(mesaId: number, datos: any): Observable<any> {
     return this.http.post(`${this.url}/pagos/mesa/${mesaId}`, datos);
   }
 
-  // Método para el componente AdminVentas
   getReporteVentas(): Observable<any[]> {
     return this.http.get<any[]>(`${this.url}/pedidos/reporte/ventas`);
   }
 
-  // Método para el AdminDashboard
   getResumenEstados(): Observable<any> {
     return this.http.get<any>(`${this.url}/admin/resumen`);
   }
-  
 }

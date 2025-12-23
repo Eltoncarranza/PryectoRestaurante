@@ -6,13 +6,12 @@ import { ApiService } from '../../services/api.service';
 import { Plato } from '../../models/plato.model';
 import { Mesa } from '../../models/mesa.model';
 
-// Definimos una interfaz clara para los elementos del carrito
 interface ItemCarrito {
   plato: Plato;
   cantidad: number;
   precioUnitario: number;
   totalItem: number;
-  notas: string;
+  notas: string; // CAMBIADO: Volvemos a 'notas' para que coincida con tu HTML
 }
 
 @Component({
@@ -35,34 +34,33 @@ export class MenuComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('idMesa'));
-    this.idMesa = id; 
+    const idParam = this.route.snapshot.paramMap.get('idMesa');
+    if (idParam) {
+      this.idMesa = Number(idParam);
+      this.cargarDatos();
+    } else {
+      this.router.navigate(['/mesas']);
+    }
+  }
 
-    // 1. Carga de datos de la mesa (Sincronizado con ApiService.getMesa)
-    this.apiService.getMesa(id).subscribe({
-      next: (mesa: any) => {
+  private cargarDatos(): void {
+    this.apiService.getMesa(this.idMesa).subscribe({
+      next: (mesa: Mesa) => {
         this.mesaSeleccionada = mesa;
         this.cargando = false;
       },
-      error: (err: any) => {
-        console.error('Error al obtener la mesa', err);
+      error: () => {
         this.cargando = false;
-        alert('No se pudo cargar la información de la mesa.');
+        this.router.navigate(['/mesas']);
       }
     });
 
-    // 2. Carga del catálogo de platos
     this.apiService.getPlatos().subscribe({
-      next: (data: any) => {
-        this.platos = data;
-      },
-      error: (err: any) => {
-        console.error('Error al cargar platos', err);
-      }
+      next: (data) => this.platos = data,
+      error: (err) => console.error('Error al cargar platos', err)
     });
   }
 
-  // Cálculo preciso del total acumulado
   get totalPedido(): number {
     return this.carrito.reduce((acc, item) => acc + item.totalItem, 0);
   }
@@ -74,66 +72,57 @@ export class MenuComponent implements OnInit {
       itemExistente.cantidad++;
       itemExistente.totalItem = itemExistente.cantidad * itemExistente.precioUnitario;
     } else {
-      const notaEspecial = prompt(`¿Alguna especificación para ${plato.nombre}? (Opcional)`);
-      
+      const notaEspecial = prompt(`¿Alguna especificación para ${plato.nombre}?`);
       this.carrito.push({
         plato: plato,
         cantidad: 1,
         precioUnitario: plato.precio,
         totalItem: plato.precio,
-        notas: notaEspecial || '' 
+        notas: notaEspecial || '' // Usamos 'notas' aquí también
       });
     }
+  }
+
+  // SOLUCIÓN AL ERROR TS2339: Agregamos la función que faltaba
+  vaciarCarrito(): void {
+    if (confirm('¿Deseas borrar toda la orden actual?')) {
+      this.carrito = [];
+    }
+  }
+
+  enviarPedidoFinal(): void {
+    if (this.carrito.length === 0) {
+      alert('El carrito está vacío.');
+      return;
+    }
+
+    const pedidoData = {
+      items: this.carrito.map(item => ({
+        plato: { id: item.plato.id }, 
+        cantidad: item.cantidad,
+        notas: item.notas, // Enviamos 'notas' al servidor
+        precioUnitario: item.precioUnitario
+      })),
+      esExtra: false
+    };
+
+    this.apiService.crearPedido(this.idMesa, pedidoData).subscribe({
+      next: () => {
+        alert('¡Pedido enviado con éxito!');
+        this.router.navigate(['/mesas']);
+      },
+      error: (err) => alert('Error al procesar el pedido.')
+    });
   }
 
   cambiarCantidad(index: number, delta: number): void {
     const item = this.carrito[index];
     item.cantidad += delta;
-    
-    if (item.cantidad <= 0) {
-      this.quitarDelCarrito(index);
-    } else {
-      item.totalItem = item.cantidad * item.precioUnitario;
-    }
+    if (item.cantidad <= 0) this.quitarDelCarrito(index);
+    else item.totalItem = item.cantidad * item.precioUnitario;
   }
-
-enviarPedidoFinal(): void {
-  if (this.carrito.length === 0) {
-    alert('El carrito está vacío.');
-    return;
-  }
-
-  // MODIFICACIÓN AQUÍ: Estructura exacta para que Spring Boot la reconozca
-  const pedidoData = {
-    items: this.carrito.map(item => ({
-      // En lugar de 'platoId: item.plato.id', enviamos el objeto completo
-      plato: { id: item.plato.id }, 
-      cantidad: item.cantidad,
-      notas: item.notas,
-      precioUnitario: item.precioUnitario
-    })),
-    esExtra: false
-  };
-
-  this.apiService.crearPedido(this.idMesa, pedidoData).subscribe({
-    next: () => {
-      alert('¡Pedido enviado! La cocina ha recibido la comanda.');
-      this.router.navigate(['/mesas']);
-    },
-    error: (err: any) => {
-      console.error('Error al enviar pedido', err);
-      alert('Error al procesar el pedido. Intente de nuevo.');
-    }
-  });
-}
 
   quitarDelCarrito(index: number): void {
     this.carrito.splice(index, 1);
-  }
-
-  vaciarCarrito(): void {
-    if (confirm('¿Deseas borrar toda la orden actual?')) {
-      this.carrito = [];
-    }
   }
 }

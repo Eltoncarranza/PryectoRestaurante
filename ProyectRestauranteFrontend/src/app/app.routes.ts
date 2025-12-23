@@ -16,7 +16,7 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
 
   // ==========================================
-  // RUTAS DE ADMINISTRACIÓN (Solo ADMIN)
+  // RUTAS DE ADMINISTRACIÓN
   // ==========================================
   { 
     path: 'admin/dashboard', 
@@ -38,13 +38,19 @@ export const routes: Routes = [
   },
 
   // ==========================================
-  // RUTAS OPERATIVAS (ADMIN y MESERO pueden verlas)
+  // RUTAS OPERATIVAS (MESERO Y ADMIN)
   // ==========================================
   { 
     path: 'mesas', 
     component: MesasComponent, 
     canActivate: [authGuard], 
-    data: { role: ['ADMIN', 'MESERO'] } // El guard debe aceptar arrays para ser flexible
+    data: { role: ['ADMIN', 'MESERO'] } 
+  },
+  { 
+    path: 'ordenar/:idMesa', 
+    component: MenuComponent, 
+    canActivate: [authGuard], 
+    data: { role: ['ADMIN', 'MESERO'] } 
   },
   { 
     path: 'menu/:idMesa', 
@@ -60,7 +66,7 @@ export const routes: Routes = [
   },
 
   // ==========================================
-  // RUTA DE COCINA (ADMIN y COCINERO)
+  // RUTA DE COCINA
   // ==========================================
   { 
     path: 'cocina', 
@@ -69,5 +75,6 @@ export const routes: Routes = [
     data: { role: ['ADMIN', 'COCINERO'] } 
   },
 
+  // RUTA COMODÍN (Debe ir siempre al final)
   { path: '**', redirectTo: '/login' }
 ];

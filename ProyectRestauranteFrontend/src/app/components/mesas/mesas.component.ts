@@ -1,70 +1,87 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common'; // <--- CORRIGE EL ERROR NG8002
+import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
-import { Mesa, MesaEstado } from '../../models/mesa.model';
-import { interval, Subscription } from 'rxjs'; 
-import { startWith, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-mesas',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
+  standalone: true, // Asegúrate de que sea standalone si usas imports aquí
+  imports: [CommonModule], // <--- ESTO HACE QUE FUNCIONE [ngClass]
   templateUrl: './mesas.component.html',
   styleUrls: ['./mesas.component.css']
 })
-export class MesasComponent implements OnInit, OnDestroy {
-  mesas: Mesa[] = [];
-  cargando: boolean = true;
-  private refreshSubscription?: Subscription; 
+export class MesasComponent implements OnInit {
+  mesas: any[] = [];
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService, private router: Router) {}
 
   ngOnInit(): void {
-    this.refreshSubscription = interval(5000)
-      .pipe(
-        startWith(0),
-        switchMap(() => this.apiService.getMesas())
-      )
-      .subscribe({
-        next: (data: any) => {
-          this.mesas = data;
-          this.cargando = false;
-        },
-        error: (err: any) => {
-          console.error('Error al conectar con Spring Boot', err);
-          this.cargando = false;
-        }
-      });
+    this.cargarMesas();
   }
 
-  agregarNuevaMesa(): void {
-    const proximoNumero = this.mesas.length > 0 
-      ? Math.max(...this.mesas.map(m => m.numero)) + 1 
-      : 1;
-
-    const nuevaMesa: Partial<Mesa> = {
-      numero: proximoNumero,
-      estado: MesaEstado.LIBRE
-    };
-
-    this.apiService.crearMesa(nuevaMesa).subscribe({
-      next: () => console.log('Mesa creada'),
-      error: (err: any) => console.error('Error al crear mesa', err)
+  cargarMesas() {
+    this.apiService.getMesas().subscribe({
+      next: (data) => this.mesas = data,
+      error: (err) => console.error('Error al cargar mesas', err)
     });
   }
 
-  quitarMesa(id: number, event: Event): void {
-    event.stopPropagation();
-    if (confirm('¿Desea eliminar esta mesa?')) {
-      this.apiService.eliminarMesa(id).subscribe({
-        next: () => console.log('Mesa eliminada'),
-        error: (err: any) => alert('No se pudo eliminar.')
+  // CORRIGE EL ERROR TS2551: Agregamos la función para el botón dorado
+  agregarMesa() {
+    const numero = prompt('Ingrese el número de la nueva mesa:');
+    if (numero) {
+      const nuevaMesa = {
+        numero: parseInt(numero),
+        estado: 'LIBRE',
+        color: 'black' // Color inicial para mesas libres
+      };
+
+      this.apiService.crearMesa(nuevaMesa).subscribe({
+        next: () => {
+          alert('Mesa agregada al salón');
+          this.cargarMesas(); // Recarga la vista
+        },
+        error: (err) => alert('Error al crear mesa')
       });
     }
   }
 
-  ngOnDestroy(): void {
-    this.refreshSubscription?.unsubscribe();
+irAlMenu(idMesa: number) {
+  console.log("Intentando ir al menú de la mesa ID:", idMesa); // <--- MIRA ESTO EN LA CONSOLA
+  
+  if (!idMesa) {
+    alert("Error: La mesa no tiene un ID válido.");
+    return;
   }
+  
+  this.router.navigate(['/menu', idMesa]); 
+}
+
+  cobrarMesa(idMesa: number) {
+    if (confirm('¿Deseas cobrar y liberar la mesa?')) {
+      this.apiService.cobrarMesa(idMesa).subscribe({
+        next: () => {
+          alert('Mesa liberada');
+          this.cargarMesas();
+        },
+        error: (err) => console.error('Error al cobrar:', err)
+      });
+    }
+  }
+
+ // En mesas.component.ts
+
+// 1. Agrega esta variable al inicio de tu clase
+pedidoSeleccionado: any = null;
+
+// 2. Modifica la función verDetalle
+verDetalle(pedido: any) {
+  this.pedidoSeleccionado = pedido;
+  console.log('Mostrando platos del pedido:', pedido.items); // Para tu referencia en consola
+}
+
+// 3. Agrega esta función para limpiar la selección al cerrar
+cerrarDetalle() {
+  this.pedidoSeleccionado = null;
+}
 }

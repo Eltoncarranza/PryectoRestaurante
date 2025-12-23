@@ -1,43 +1,99 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-danger pb-3">
-    <h2 class="text-danger fw-bold"><i class="bi bi-fire"></i> SALÓN CHIFA</h2>
-    <button class="btn btn-warning shadow-sm fw-bold" (click)="agregarNuevaMesa()">
+    <h2 class="text-danger fw-bold">SALÓN CHIFA</h2>
+    <button class="btn btn-warning fw-bold shadow-sm" (click)="agregarMesa()">
       <i class="bi bi-plus-circle"></i> Agregar Mesa
     </button>
   </div>
 
-  <div class="row">
+  <div class="row g-4">
     @for (mesa of mesas; track mesa.id) {
-      <div class="col-6 col-md-3 mb-4 position-relative">
-        <button class="btn btn-dark btn-sm position-absolute shadow-sm" 
-                style="top: -10px; right: 10px; z-index: 10; border: 1px solid #ffc107; border-radius: 50%;"
-                (click)="quitarMesa(mesa.id, $event)">
-          <i class="bi bi-x-lg text-warning"></i>
-        </button>
-
-        <a [routerLink]="['/menu', mesa.id]" 
-           class="card h-100 shadow-sm text-decoration-none border-warning"
-           [style.background-color]="mesa.estado === 'OCUPADA' ? '#b91c1c' : '#1a1a1a'">
-   
-          <div class="card-body d-flex flex-column align-items-center justify-content-center" style="min-height: 140px;">
-            <div class="h2 mb-1 text-warning fw-bold">Mesa {{ mesa.numero }}</div>
+      <div class="col-md-3">
+        <div class="card h-100 shadow-lg border-0 card-chifa" 
+             [style.background-color]="mesa.pedidoActual ? '#b31b1b' : '#1a1a1a'">
+          
+          <div class="card-body text-center py-4">
+            <h2 class="text-gold fw-bold mb-3">Mesa {{ mesa.numero }}</h2>
             
-            <span class="badge shadow-sm px-3 py-2 rounded-pill"
-                  [ngClass]="mesa.estado === 'OCUPADA' ? 'bg-warning text-dark' : 'bg-light text-success'">
-              {{ mesa.estado }}
+            <span class="badge rounded-pill mb-3 px-3 py-2"
+                  [ngClass]="mesa.pedidoActual ? 'bg-warning text-dark' : 'bg-white text-success'">
+              {{ mesa.pedidoActual ? 'OCUPADA' : 'LIBRE' }}
             </span>
+
+            @if (mesa.pedidoActual) {
+              <div class="mt-2 pt-3 border-top border-secondary text-white">
+                <p class="mb-2 fw-bold">Total: S/ {{ mesa.pedidoActual.total || 0 }}</p>
+                
+                <div class="d-grid gap-2">
+                  <button class="btn btn-sm btn-outline-light" (click)="verDetalle(mesa.pedidoActual)">
+                    <i class="bi bi-eye"></i> Detalle
+                  </button>
+                  <button class="btn btn-sm btn-success fw-bold" (click)="cobrarMesa(mesa.id)">
+                    <i class="bi bi-cash-stack"></i> COBRAR
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <button class="btn btn-gold w-100 mt-2 py-2 fw-bold" (click)="irAlMenu(mesa.id)">
+                TOMAR ORDEN
+              </button>
+            }
           </div>
-        </a>
-      </div>
-    } @empty {
-      <div class="col-12 text-center py-5 border rounded bg-light">
-        @if (cargando) {
-          <div class="spinner-border text-danger" role="status"></div>
-          <p class="mt-3 text-danger fw-bold">Conectando con Supabase...</p>
-        } @else {
-          <p class="text-muted mt-3">No hay mesas registradas.</p>
-        }
+        </div>
       </div>
     }
   </div>
 </div>
+
+@if (pedidoSeleccionado) {
+  <div class="modal-backdrop fade show"></div>
+  <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-dark text-white border border-warning shadow-lg">
+        
+        <div class="modal-header border-secondary">
+          <h5 class="modal-title text-gold">
+            <i class="bi bi-receipt"></i> Comanda Mesa #{{ pedidoSeleccionado.id }}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarDetalle()"></button>
+        </div>
+
+        <div class="modal-body">
+          <table class="table table-dark table-hover mb-0">
+            <thead class="text-gold">
+              <tr>
+                <th>Plato</th>
+                <th class="text-center">Cant.</th>
+                <th class="text-end">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of pedidoSeleccionado.items; track item.id) {
+                <tr>
+                  <td>
+                    <div class="fw-bold">{{ item.plato?.nombre }}</div>
+                    @if (item.notas) {
+                      <small class="text-warning italic">
+                        <i class="bi bi-chat-dots"></i> {{ item.notas }}
+                      </small>
+                    }
+                  </td>
+                  <td class="text-center">{{ item.cantidad }}</td>
+                  <td class="text-end">S/ {{ item.precioUnitario * item.cantidad }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <div class="modal-footer border-secondary d-flex justify-content-between">
+          <h4 class="text-gold mb-0">TOTAL: S/ {{ pedidoSeleccionado.total }}</h4>
+          <button type="button" class="btn btn-warning fw-bold" (click)="cerrarDetalle()">
+            ENTENDIDO
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}
