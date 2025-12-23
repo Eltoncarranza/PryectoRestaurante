@@ -1,0 +1,46 @@
+<div class="container mt-4">
+  <h3>Gestión de Platos y Precios</h3>
+  
+  <div class="card mb-4 shadow-sm border-primary">
+    <div class="card-body">
+      <form (ngSubmit)="guardarPlato()" class="row g-3">
+        <div class="col-md-4">
+          <input type="text" placeholder="Nombre del plato" class="form-control" [(ngModel)]="platoForm.nombre" name="nombre" required>
+        </div>
+        <div class="col-md-2">
+          <input type="number" placeholder="Precio (S/)" class="form-control" [(ngModel)]="platoForm.precio" name="precio" required>
+        </div>
+        <div class="col-md-4">
+          <input type="text" placeholder="Descripción" class="form-control" [(ngModel)]="platoForm.descripcion" name="descripcion">
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">{{ editando ? 'Actualizar' : 'Añadir' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <table class="table table-hover bg-white shadow-sm">
+    <thead class="table-dark">
+      <tr>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (p of platos; track p.id) {
+        <tr>
+          <td>{{ p.nombre }}</td>
+          <td>S/ {{ p.precio | number:'1.2-2' }}</td>
+          <td><span class="badge" [ngClass]="p.disponible ? 'bg-success' : 'bg-secondary'">{{ p.disponible ? 'Activo' : 'Agotado' }}</span></td>
+          <td>
+            <button class="btn btn-sm btn-warning me-2" (click)="prepararEdicion(p)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="eliminar(p.id!)">X</button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

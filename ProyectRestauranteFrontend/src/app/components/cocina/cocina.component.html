@@ -1,0 +1,39 @@
+<div class="container mt-4">
+  <h2 class="mb-4 text-primary"><i class="bi bi-fire"></i> Órdenes Pendientes</h2>
+
+  <div class="row g-3">
+    @for (pedido of pedidosPendientes; track pedido.id) {
+      <div class="col-md-4">
+        <div class="card shadow border-warning">
+          <div class="card-header bg-warning d-flex justify-content-between">
+            <span class="fw-bold">Mesa {{ pedido.mesa?.numero }}</span>
+            <small>#{{ pedido.id }}</small>
+          </div>
+          <div class="card-body">
+            <ul class="list-group list-group-flush mb-3">
+              @for (item of pedido.items; track item.id) {
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                  <div>
+                    <span class="badge bg-dark me-2">{{ item.cantidad }}</span>
+                    <strong>{{ item.plato?.nombre }}</strong>
+                    @if (item.notas) {
+                      <div class="small text-danger italic"><i class="bi bi-info-circle"></i> {{ item.notas }}</div>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+            
+            <button class="btn btn-success w-100 fw-bold" (click)="marcarListo(pedido.id)">
+              <i class="bi bi-check-lg"></i> TERMINADO
+            </button>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="text-center mt-5">
+        <h4 class="text-muted">No hay pedidos pendientes en cocina</h4>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<div class="container mt-4" *ngIf="mesa">
+  <div class="card shadow-lg border-0">
+    <div class="card-header bg-dark text-white text-center py-3">
+      <h3><i class="bi bi-receipt"></i> CUENTA - MESA {{ mesa.numero }}</h3>
+    </div>
+    
+    <div class="card-body">
+      <table class="table table-hover mt-3">
+        <thead class="table-light">
+          <tr>
+            <th>Cant.</th>
+            <th>Plato</th>
+            <th class="text-end">Precio</th>
+            <th class="text-end">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of mesa.pedidoActual?.items; track item.id) {
+            <tr>
+              <td>{{ item.cantidad }}</td>
+              <td>{{ item.plato?.nombre }}</td>
+              <td class="text-end">S/ {{ item.precioUnitario | number:'1.2-2' }}</td>
+              <td class="text-end fw-bold">S/ {{ (item.precioUnitario * item.cantidad) | number:'1.2-2' }}</td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr class="table-secondary">
+            <td colspan="3" class="text-end fw-bold h4">TOTAL A PAGAR:</td>
+            <td class="text-end text-danger fw-bold h4">S/ {{ calcularTotal() | number:'1.2-2' }}</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="row mt-5 border-top pt-4">
+        <div class="col-md-6">
+          <label class="form-label fw-bold">Método de Pago</label>
+          <select class="form-select mb-3" [(ngModel)]="metodoPago">
+            <option value="EFECTIVO">Efectivo</option>
+            <option value="TARJETA">Tarjeta (Débito/Crédito)</option>
+            <option value="TRANSFERENCIA">Transferencia / Yape / Plin</option>
+          </select>
+        </div>
+        
+        <div class="col-md-6" *ngIf="metodoPago === 'EFECTIVO'">
+          <label class="form-label fw-bold">Monto Recibido</label>
+          <input type="number" class="form-control" [(ngModel)]="montoEntregado">
+          <div class="mt-2 text-muted" *ngIf="montoEntregado > calcularTotal()">
+            Vuelto: <span class="text-success fw-bold">S/ {{ (montoEntregado - calcularTotal()) | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-grid gap-2 mt-4">
+        <button class="btn btn-success btn-lg" (click)="procesarPago()">
+          <i class="bi bi-cash-stack"></i> FINALIZAR Y LIBERAR MESA
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

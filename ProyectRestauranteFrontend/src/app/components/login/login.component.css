@@ -1,0 +1,62 @@
+.login-page {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  font-family: 'Inter', sans-serif;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.icon-box {
+  width: 70px;
+  height: 70px;
+  background: #10b981;
+  color: white;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+}
+
+.title {
+  color: #1f2937;
+  letter-spacing: -1px;
+}
+
+.custom-input {
+  border: 2px solid #f3f4f6;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+
+.custom-input:focus {
+  border-color: #10b981;
+  box-shadow: none;
+  background: white;
+}
+
+.btn-emerald {
+  background-color: #10b981;
+  border: none;
+  color: white;
+  border-radius: 12px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-emerald:hover {
+  background-color: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+}
+
+.btn-outline-dark {
+  border-radius: 12px;
+  border: 2px solid #374151;
+  font-weight: 600;
+}

@@ -1,0 +1,42 @@
+<div class="container mt-4">
+  <h2 class="mb-4">Panel de Control Administrativo</h2>
+  
+  <div class="row g-4 mb-5">
+    <div class="col-md-4">
+      <div class="card bg-primary text-white shadow">
+        <div class="card-body">
+          <h5><i class="bi bi-calendar-check"></i> Ventas del Día</h5>
+          <h2 class="fw-bold">S/ {{ totalVentasHoy | number:'1.2-2' }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-success text-white shadow">
+        <div class="card-body">
+          <h5><i class="bi bi- door-open"></i> Mesas Libres</h5>
+          <h2 class="fw-bold">{{ conteoMesas.libres }} / {{ conteoMesas.total }}</h2>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-danger text-white shadow">
+        <div class="card-body">
+          <h5><i class="bi bi-people"></i> Mesas Ocupadas</h5>
+          <h2 class="fw-bold">{{ conteoMesas.ocupadas }}</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">Accesos Directos</div>
+        <div class="card-body d-flex gap-3">
+          <a routerLink="/admin/platos" class="btn btn-outline-dark">Gestionar Menú</a>
+          <a routerLink="/admin/ventas" class="btn btn-outline-dark">Reporte Detallado</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

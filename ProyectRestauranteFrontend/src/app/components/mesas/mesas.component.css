@@ -1,0 +1,23 @@
+/* src/app/components/mesas/mesas.component.css */
+.mesa-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  border: none;
+  border-radius: 15px;
+}
+
+.mesa-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+}
+
+.mesa-numero {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.mesa-estado {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
