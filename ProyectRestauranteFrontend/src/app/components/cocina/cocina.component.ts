@@ -1,40 +1,54 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
+import { Pedido } from '../../models/pedido.model';
+import { interval, Subscription } from 'rxjs';
+import { startWith, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-cocina',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './cocina.component.html'
+  templateUrl: './cocina.component.html',
+  styleUrls: ['./cocina.component.css']
 })
-export class CocinaComponent implements OnInit {
-  pedidosPendientes: any[] = [];
+export class CocinaComponent implements OnInit, OnDestroy {
+  pedidosPendientes: Pedido[] = [];
+  private refreshSub?: Subscription;
 
   constructor(private apiService: ApiService) {}
 
   ngOnInit(): void {
-    this.cargarPedidos();
-    // Opcional: Recargar cada 30 segundos para ver nuevos pedidos
-    setInterval(() => this.cargarPedidos(), 1000);
+    // Escucha pedidos nuevos cada 5 segundos
+    this.refreshSub = interval(5000)
+      .pipe(
+        startWith(0),
+        switchMap(() => this.apiService.getPedidos())
+      )
+      .subscribe({
+        next: (data: any) => {
+          // Filtramos para mostrar solo lo que no está listo
+          this.pedidosPendientes = data.filter((p: any) => !p.pedidoListo);
+        },
+        error: (err: any) => console.error('Error en cocina:', err)
+      });
   }
 
- cargarPedidos(): void {
-  this.apiService.getPedidos().subscribe({
-    next: (data) => {
-      this.pedidosPendientes = data.filter((p: any) => !p.pedidoListo);
+  // En cocina.component.ts, cambia la función marcarListo:
+marcarListo(id: number | undefined): void {
+  if (!id) return; // Si no hay ID, no hace nada
+
+  this.apiService.marcarPedidoListo(id).subscribe({
+    next: () => {
+      console.log('Pedido despachado');
+      // Opcional: filtrar localmente para que desaparezca rápido
+      this.pedidosPendientes = this.pedidosPendientes.filter(p => p.id !== id);
     },
-    error: (err: any) => console.error('Error al cargar pedidos', err) // <--- AGREGAR ": any"
+    error: (err: any) => alert('Error al actualizar pedido')
   });
 }
 
-
-  marcarListo(id: number): void {
-    this.apiService.marcarPedidoListo(id).subscribe({
-      next: () => {
-        this.cargarPedidos();
-      },
-      error: (err) => alert('No se pudo marcar el pedido como listo.')
-    });
+  ngOnDestroy(): void {
+    this.refreshSub?.unsubscribe();
   }
 }

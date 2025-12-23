@@ -1,0 +1,23 @@
+.table thead th {
+  padding: 15px;
+  font-weight: 600;
+}
+
+.table tbody td {
+  padding: 15px;
+  background-color: #ffffff;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.table-hover tbody tr:hover td {
+  background-color: #f8f9fa;
+}

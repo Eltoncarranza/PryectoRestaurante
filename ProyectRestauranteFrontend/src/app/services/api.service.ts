@@ -14,11 +14,10 @@ export class ApiService {
   // ==========================================
   // GESTIÓN DE MESAS
   // ==========================================
-
-  getMesas(): Observable<Mesa[]> {
-    return this.http.get<Mesa[]>(`${this.url}/mesas/mesaDe`);
-  }
-
+getMesas(): Observable<Mesa[]> {
+  // Debe ser solo /mesas para que coincida con lo que tienes en tu servidor
+  return this.http.get<Mesa[]>(`${this.url}/mesas`); 
+}
   getMesa(id: number): Observable<any> {
     return this.http.get<any>(`${this.url}/mesas/${id}`);
   }
@@ -89,4 +88,5 @@ export class ApiService {
   getResumenEstados(): Observable<any> {
     return this.http.get<any>(`${this.url}/admin/resumen`);
   }
+  
 }

@@ -3,7 +3,7 @@ import { Plato } from './plato.model';
 
 export interface PedidoItem {
   id?: number;
-  plato: Plato;
+  plato?: Plato; // Agregamos '?' porque puede ser opcional si hay error de carga
   cantidad: number;
   precioUnitario: number;
   totalItem: number;
@@ -12,7 +12,7 @@ export interface PedidoItem {
 
 export interface Pedido {
   id?: number;
-  mesa: Mesa;
+  mesa?: Mesa; // Agregamos '?' para evitar el error 'reading numero'
   items: PedidoItem[];
   pedidoListo: boolean;
   fechaHoraCreacion?: number;

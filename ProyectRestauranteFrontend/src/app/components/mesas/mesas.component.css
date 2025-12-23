@@ -1,23 +1,26 @@
-/* src/app/components/mesas/mesas.component.css */
+/* Paleta de colores Chifa */
+.text-danger { color: #b91c1c !important; } /* Rojo Imperial */
+.border-danger { border-color: #b91c1c !important; }
+.btn-warning { 
+    background-color: #facc15 !important; /* Dorado */
+    color: #b91c1c !important; 
+    border: none;
+}
+
 .mesa-card {
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-  border: none;
-  border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-width: 2px !important;
 }
 
 .mesa-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(185, 28, 28, 0.4) !important;
 }
 
-.mesa-numero {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
+.text-warning { color: #facc15 !important; }
+.border-warning { border-color: #facc15 !important; }
 
-.mesa-estado {
-  font-size: 0.9rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+/* Animación de carga */
+.spinner-border.text-danger {
+    color: #b91c1c !important;
 }

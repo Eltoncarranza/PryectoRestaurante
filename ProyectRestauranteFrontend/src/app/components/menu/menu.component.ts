@@ -97,34 +97,35 @@ export class MenuComponent implements OnInit {
     }
   }
 
-  enviarPedidoFinal(): void {
-    if (this.carrito.length === 0) {
-      alert('El carrito está vacío.');
-      return;
-    }
-
-    // Estructura de datos limpia para el Backend
-    const pedidoData = {
-      items: this.carrito.map(item => ({
-        platoId: item.plato.id,
-        cantidad: item.cantidad,
-        notas: item.notas,
-        precioUnitario: item.precioUnitario
-      })),
-      esExtra: false
-    };
-
-    this.apiService.crearPedido(this.idMesa, pedidoData).subscribe({
-      next: () => {
-        alert('¡Pedido enviado! La cocina ha recibido la comanda.');
-        this.router.navigate(['/mesas']);
-      },
-      error: (err: any) => {
-        console.error('Error al enviar pedido', err);
-        alert('Error al procesar el pedido. Intente de nuevo.');
-      }
-    });
+enviarPedidoFinal(): void {
+  if (this.carrito.length === 0) {
+    alert('El carrito está vacío.');
+    return;
   }
+
+  // MODIFICACIÓN AQUÍ: Estructura exacta para que Spring Boot la reconozca
+  const pedidoData = {
+    items: this.carrito.map(item => ({
+      // En lugar de 'platoId: item.plato.id', enviamos el objeto completo
+      plato: { id: item.plato.id }, 
+      cantidad: item.cantidad,
+      notas: item.notas,
+      precioUnitario: item.precioUnitario
+    })),
+    esExtra: false
+  };
+
+  this.apiService.crearPedido(this.idMesa, pedidoData).subscribe({
+    next: () => {
+      alert('¡Pedido enviado! La cocina ha recibido la comanda.');
+      this.router.navigate(['/mesas']);
+    },
+    error: (err: any) => {
+      console.error('Error al enviar pedido', err);
+      alert('Error al procesar el pedido. Intente de nuevo.');
+    }
+  });
+}
 
   quitarDelCarrito(index: number): void {
     this.carrito.splice(index, 1);

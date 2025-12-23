@@ -13,14 +13,14 @@ export class AuthService {
   login(credentials: any): Observable<any> {
     return this.http.post(`${this.url}/auth/login`, credentials).pipe(
       tap((res: any) => {
-        // CORRECCIÓN: Java devuelve 'rol', no 'role'. No buscamos 'status' porque no se envía.
+        // CORRECCIÓN: Usamos 'rol' que es lo que envía Java. No validamos 'status'.
         if (res && res.rol) {
           const userRole = res.rol.toUpperCase();
           localStorage.setItem(this.roleKey, userRole);
           localStorage.setItem('token', 'session_active'); 
           
-          console.log('Sesión iniciada. Rol detectado:', userRole);
-          this.redirigir(userRole);
+          console.log('Usuario identificado:', userRole);
+          this.redirigir(userRole); // Envía al usuario a su panel correspondiente
         }
       })
     );
@@ -45,7 +45,6 @@ export class AuthService {
     if (destino) {
       this.router.navigate([destino]);
     } else {
-      console.error('Rol no reconocido:', role);
       this.router.navigate(['/login']);
     }
   }

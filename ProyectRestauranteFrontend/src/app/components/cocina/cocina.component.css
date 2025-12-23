@@ -1,0 +1,12 @@
+/* src/app/components/cocina/cocina.component.css */
+.card {
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+.card:hover {
+  transform: scale(1.02);
+}
+.header-chifa {
+  letter-spacing: 1px;
+}
